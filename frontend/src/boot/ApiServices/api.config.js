@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const url = 'http://localhost:3000/';
-const url = 'http://47.236.145.45:3000/';
+const url = 'http://47.236.145.45/';
 const api = axios.create({
     baseURL: `${url}api/` 
 });
