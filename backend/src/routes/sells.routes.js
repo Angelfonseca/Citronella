@@ -10,3 +10,4 @@ router.delete('/:id', sellsController.deleteSellById);
 router.get('/range/:id', sellsController.getSellsByRange);
 
 module.exports = router;
+
