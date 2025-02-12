@@ -21,6 +21,16 @@ export default {
       adminPage: 'Página de administrador',
       addProduct: 'Agregar producto',
       toggleSidebar: 'Alternar barra lateral',
+    },
+    accessibilityButton: {
+      tools: 'Herramientas de accesibilidad',
+      openMenu: 'Abrir menú de accesibilidad',
+      fontChange: 'Cambiar fuente',
+      underlineLinks: 'Subrayar enlaces',
+      textOnly: 'Vista solo texto',
+      darkView: 'Vista oscura',
+      reset: 'Restablecer configuración',
+      language: 'Idioma'
     }
   },
 }

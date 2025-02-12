@@ -8,7 +8,6 @@
       <q-card class="q-pa-md">
         <q-card-section class="row q-col-gutter-md">
           <q-input v-model="searchQuery" filled dense label="Buscar vestido" class="col-md-3 col-xs-12" />
-          <q-select v-model="selectedForSelling" :options="forSellingOptions" filled dense label="Tipo de venta" class="col-md-2 col-xs-12" />
           <q-select v-model="selectedSize" :options="sizeOptions" filled dense label="Tamaño" class="col-md-2 col-xs-12" />
           <q-select v-model="selectedColor" :options="uniqueColors" filled dense label="Color" class="col-md-2 col-xs-12" />
           <q-input v-model.number="minPrice" type="number" filled dense label="Precio mínimo" class="col-md-2 col-xs-6" />
@@ -34,6 +33,10 @@
 import { ref, computed, onMounted } from 'vue';
 import DressCard from '../components/DressCard.vue';
 import { api } from 'boot/axios';
+import checkLoggedIn from 'src/boot/auth';
+
+// Verificar si el usuario está autenticado
+checkLoggedIn();
 
 const dresses = ref([]);
 const searchQuery = ref('');
@@ -46,13 +49,7 @@ const onlyCleaning = ref(false);
 const selectedForSelling = ref('');
 const selectedCategory = ref('');
 
-const forSellingOptions = [
-  { label: 'Todos', value: '' },
-  { label: 'Para Venta', value: 'sale' },
-  { label: 'Para Renta', value: 'rent' }
-];
-
-const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL'];
+const sizeOptions = ['Todos','S', 'M', 'L', 'XL', 'XXL'];
 const categoryOptions = ['Fiesta', 'Casual', 'Boda', 'Cóctel'];
 
 const uniqueColors = computed(() => {
@@ -68,10 +65,10 @@ const filteredDresses = computed(() => {
 
   return dresses.value.filter(dress => {
     const matchesSearch = dress.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesSize = selectedSize.value ? dress.size === selectedSize.value : true;
+    const matchesSize = selectedSize.value === 'Todos' ? true : (selectedSize.value ? dress.size === selectedSize.value : true);
     const matchesColor = selectedColor.value ? dress.color.toLowerCase() === selectedColor.value.toLowerCase() : true;
-    const matchesAvailability = onlyAvailable.value ? dress.available : true;
-    const matchesCleaning = onlyCleaning.value ? dress.cleaning : true;
+    const matchesAvailability = onlyAvailable.value ? dress.available === true : true;
+    const matchesCleaning = onlyCleaning.value ? dress.cleaning === true : true;
     const matchesMinPrice = minPriceValue !== null ? Number(dress.price) >= minPriceValue : true;
     const matchesMaxPrice = maxPriceValue !== null ? Number(dress.price) <= maxPriceValue : true;
     const matchesCategory = selectedCategory.value ? dress.category === selectedCategory.value : true;
@@ -89,7 +86,7 @@ const filteredDresses = computed(() => {
 const fetchDresses = async () => {
   try {
     const response = await api.get('/dresses/getAll');
-    dresses.value = response.data;
+    dresses.value = response.data.filter(dress => !dress.sold);
   } catch (error) {
     console.error('Error fetching dresses:', error);
   }

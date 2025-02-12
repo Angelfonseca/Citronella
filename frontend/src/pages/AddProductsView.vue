@@ -124,19 +124,51 @@
           </div>
 
           <!-- Imagen -->
-          <q-file
-            v-model="product.image"
-            label="Imagen"
-            accept="image/*"
-            outlined
-            dense
-            @update:model-value="onFileChange"
-            class="full-width"
-          >
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
+            <div class="q-gutter-y-sm">
+            <!-- Botones para seleccionar método de entrada -->
+            <div class="row q-gutter-x-sm">
+              <q-btn
+              icon="photo_library"
+              label="Galería"
+              color="primary"
+              outline
+              @click="$refs.fileInput.pickFiles()"
+              />
+              <q-btn
+              icon="photo_camera"
+              label="Cámara"
+              color="primary"
+              outline
+              @click="$refs.cameraInput.pickFiles()"
+              />
+            </div>
+
+            <!-- Input para archivos -->
+            <q-file
+              ref="fileInput"
+              v-model="product.image"
+              label="Imagen"
+              accept="image/*"
+              outlined
+              dense
+              @update:model-value="onFileChange"
+              class="full-width"
+              style="display: none"
+            />
+
+            <!-- Input para cámara -->
+            <q-file
+              ref="cameraInput"
+              v-model="product.image"
+              accept="image/*"
+              capture="environment"
+              outlined
+              dense
+              @update:model-value="onFileChange"
+              class="full-width"
+              style="display: none"
+            />
+            </div>
 
           <!-- Vista previa de la imagen -->
           <div v-if="imageUrl" class="q-mt-md flex flex-center">
@@ -160,6 +192,13 @@
 <script setup>
 import { ref } from 'vue';
 import apiService from '../boot/ApiServices/api.service';
+import checkLoggedIn from 'src/boot/auth';
+import { useQuasar } from 'quasar';
+
+
+const $q = useQuasar();
+// Verificar si el usuario está autenticado
+checkLoggedIn();
 
 const token = localStorage.getItem('token');
 
@@ -171,7 +210,7 @@ const product = ref({
   price: 0,
   size: '', // Solo para vestidos
   color: '', // Solo para vestidos
-  toSell: true, // Solo para vestidos
+  toSell: false, // Solo para vestidos
   stock: 0, // Solo para joyería
   image: null,
   category: ''
@@ -220,9 +259,18 @@ const submitProduct = async () => {
     await apiService.post(endpoint, formData, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    alert('Producto añadido con éxito');
+    $q.notify({
+      color: 'positive',
+      message: 'Producto añadido con éxito',
+      icon: 'check_circle'
+    });
     resetForm();
   } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: 'Error al añadir el producto',
+      icon: 'error'
+    });
     console.error('Error en la solicitud:', error);
   }
 };

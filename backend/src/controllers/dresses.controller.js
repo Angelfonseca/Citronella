@@ -26,7 +26,7 @@ const create = async (req, res) => {
 
 const getById = async (req, res) => {
     try {
-        const dress = await dressesService.getById(req.params.id);
+        const dress = await dressesService.getDressById(req.params.id);
         if (!dress) {
             return res.status(404).json({ message: 'Dress not found' });
         }
@@ -38,7 +38,7 @@ const getById = async (req, res) => {
 
 const updateById = async (req, res) => {
     try {
-        const updatedDress = await dressesService.updateById(req.params.id, req.body);
+        const updatedDress = await dressesService.updateDressById(req.params.id, req.body);
         if (!updatedDress) {
             return res.status(404).json({ message: 'Dress not found' });
         }
@@ -50,7 +50,7 @@ const updateById = async (req, res) => {
 
 const deleteById = async (req, res) => {
     try {
-        const deletedDress = await dressesService.deleteById(req.params.id);
+        const deletedDress = await dressesService.deleteDressById(req.params.id);
         if (!deletedDress) {
             return res.status(404).json({ message: 'Dress not found' });
         }
@@ -96,6 +96,19 @@ const patchDress = async (req, res) => {
     }
 }
 
+const changeToSell = async (req, res) => {
+    try {
+        const dress = await dressesService.changeToSell(req.params.id, req.body.price);
+        if (!dress) {
+            return res.status(404).json({ message: 'Dress not found' });
+        }
+        res.status(200).json(dress);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getAll,
     create,
@@ -104,5 +117,6 @@ module.exports = {
     deleteById,
     changeAvailability,
     changeCleaning,
-    patchDress
+    patchDress,
+    changeToSell,
 };

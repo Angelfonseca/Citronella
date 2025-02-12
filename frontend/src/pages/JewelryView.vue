@@ -42,7 +42,15 @@ import { ref, computed, onMounted } from 'vue';
 import JewelryCard from '../components/JewelryCard.vue';
 import FloatingCart from '../components/CartComponent.vue';
 import apiService from 'src/boot/ApiServices/api.service';
+import checkLoggedIn from 'src/boot/auth';
 
+// Verificar si el usuario está autenticado
+checkLoggedIn();
+const user = JSON.parse(localStorage.getItem('user'));
+
+if (user.role !== 'admin') {
+  this.$router.push('/');
+}
 // Estado de las joyas y el carrito
 const jewelry = ref([]);
 const cart = ref([]);
@@ -53,17 +61,19 @@ const minPrice = ref(null);
 const maxPrice = ref(null);
 const onlyInStock = ref(false);
 const selectedCategory = ref('');
-const categoryOptions = ['Collares', 'Anillos', 'Pulseras', 'Aretes'];
+const categoryOptions = ['Todas','Collares', 'Anillos', 'Pulseras', 'Aretes'];
 
 // Obtener joyas desde la API
 const fetchJewelry = async () => {
   try {
     const response = await apiService.get('/jewelry/getAll');
     console.log('Joyas obtenidas:', response.data);
-    jewelry.value = response.data.map(jewel => ({
-      ...jewel,
-      stock: jewel.stock || 0, // Asegúrate de que `stock` esté definido
-    }));
+    jewelry.value = response.data
+      .filter(jewel => (jewel.stock || 0) > 0)
+      .map(jewel => ({
+        ...jewel,
+        stock: jewel.stock || 0,
+      }));
   } catch (error) {
     console.error('Error obteniendo joyas:', error);
   }
@@ -78,11 +88,11 @@ const filteredJewelry = computed(() => {
   return jewelry.value.filter(jewel => {
     const matchesSearch = jewel.name.toLowerCase().includes(searchQuery.value.toLowerCase());
     const matchesMinPrice = minPrice.value !== null ? jewel.price >= minPrice.value : true;
-    const matchesMaxPrice = maxPrice.value !== null ? jewel.price <= maxPrice.value : true;
+    const matchesMaxPrice = maxPrice.value !== null && maxPrice.value !== '' ? jewel.price <= maxPrice.value : true;
     const matchesStock = onlyInStock.value ? jewel.stock > 0 : true;
-    const matchesCategory = selectedCategory.value
-      ? jewel.category.toLowerCase() === selectedCategory.value.toLowerCase()
-      : true;
+    const matchesCategory = selectedCategory.value === 'Todas' || !selectedCategory.value
+      ? true
+      : jewel.category.toLowerCase() === selectedCategory.value.toLowerCase();
     return matchesSearch && matchesMinPrice && matchesMaxPrice && matchesStock && matchesCategory;
   });
 });

@@ -15,6 +15,7 @@ const createSell = async (req, res) => {
         res.status(201).json(sell);
     } catch (error) {
         res.status(500).json({ message: error.message });
+        throw new Error(error);
     }
 };
 
@@ -54,10 +55,20 @@ const deleteSellById = async (req, res) => {
     }
 };
 
+const getSellsByRange = async (req, res) => {
+    try {
+        const sells = await sellsService.getSellsByDateRange(req.params.id);
+        res.status(200).json(sells);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getAllSells,
     createSell,
     getSellById,
     updateSellById,
-    deleteSellById
+    deleteSellById,
+    getSellsByRange
 };

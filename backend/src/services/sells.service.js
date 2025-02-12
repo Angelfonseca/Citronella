@@ -1,5 +1,6 @@
 const sells = require('../models/sells.model');
 const jewelrySchema = require('../models/jewelry.model');
+const dresses = require('../models/dresses.model');
 const getAll = async () => {
     try {
         return await sells.find();
@@ -66,10 +67,49 @@ const deleteById = async (id) => {
     }
 };
 
+const getSellsByRange = async (from, to) => {
+    try {
+        // Validate inputs
+        if (!from || !to) {
+            throw new Error('Both from and to dates are required');
+        }
+
+        // Convert strings to Date objects if needed
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+
+        // Validate date objects
+        if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+            throw new Error('Invalid date format');
+        }
+
+        // Ensure from date is before to date
+        if (fromDate > toDate) {
+            throw new Error('From date must be before or equal to to date');
+        }
+
+        // Set time to start and end of days
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+
+        const results = await sells.find({
+            createdAt: { 
+                $gte: fromDate,
+                $lte: toDate 
+            }
+        }).sort({ createdAt: 1 });
+
+        return results;
+    } catch (error) {
+        throw new Error(`Error fetching sells by range: ${error.message}`);
+    }
+};
+
 module.exports = {
     getAll,
     create,
     getById,
     updateById,
     deleteById,
+    getSellsByRange
 };

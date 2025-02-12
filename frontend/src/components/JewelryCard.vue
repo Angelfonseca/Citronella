@@ -130,7 +130,8 @@ const isValidQuantity = computed(() => quantityToBuy.value > 0 && quantityToBuy.
 // Función para obtener la URL de la imagen
 const getImageUrl = (imagePath) => {
   if (!imagePath) return defaultImage; // Usa imagen por defecto si no hay imagen
-  const imageUrl = `${url}jewelry/${imagePath}`; // Construye la URL con el endpoint correcto
+  const token = localStorage.getItem('token');
+  const imageUrl = `${url}jewelry/${imagePath}?token=${token}`; // Añade el token como query parameter
   console.log('URL de la imagen:', imageUrl);
   return imageUrl;
 };
@@ -209,6 +210,10 @@ const addToCart = () => {
   };
   emit('add-to-cart', productToAdd); // Emite el evento al componente padre
   console.log(`Agregado al carrito: ${props.jewel.name}`);
+  $q.notify({
+    type: 'positive',
+    message: `Agregado al carrito: ${props.jewel.name}`,
+  });
 };
 
 // Sincronizar cambios en `props.jewel.stock`

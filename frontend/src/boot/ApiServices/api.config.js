@@ -1,16 +1,21 @@
 import axios from 'axios';
 
 const url = 'http://localhost:3000/';
-// const url = 'https://2g4tp0th-5000.usw3.devtunnels.ms/';
+// const url = 'https://l0rw7346-3000.usw3.devtunnels.ms/';
 const api = axios.create({
     baseURL: `${url}api/` 
 });
 
 api.interceptors.request.use(
     function (config) {
-        const token = JSON.parse(localStorage.getItem('user-token'));
-        if (token) {
-            config.headers.Authorization = `${token}`;
+        const token = localStorage.getItem('token');
+        console.log('token:', token);
+        try {
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (e) {
+            console.error('Error parsing token:', e);
         }
         return config;
     },
@@ -24,13 +29,19 @@ api.interceptors.response.use(
         return response;
     },
     function (error) {
-        if (error.response && error.response.status === 401) {
-            alert('Sesión expirada o invalida. Por favor, inicie sesión nuevamente.');
-            window.location.href = '/';
+        if (error.response) {
+            switch (error.response.status) {
+                case 401:
+                    localStorage.clear();
+                    alert('Sesión expirada o invalida. Por favor, inicie sesión nuevamente.');
+                    window.location.replace('/#/login');
+                    break;
+                default:
+                    alert(`Error: ${error.response.statusText}`);
+            }
         }
         return Promise.reject(error);
     }
 );
 
 export { api, url };
-

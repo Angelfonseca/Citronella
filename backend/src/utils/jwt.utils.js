@@ -8,7 +8,7 @@ const createToken = (obj) => {
     id: obj.id,
     username: obj.username,
     iat: moment().unix(),
-    exp: moment().add(2, 'hours').unix()
+    exp: moment().add(10, 'hours').unix()
   }
   return jwt.encode(payload, secret)
 }

@@ -16,6 +16,7 @@ const createUser = async (req, res) => {
         res.status(201).json(newUsers);
     } catch (error) {
         res.status(500).json({ error: error.message });
+        throw new Error(`Error creating user: ${error.message}`);
     }
 };
 
@@ -36,20 +37,21 @@ const updateUserById = async (req, res) => {
     try {
         const id = req.params.id;
         const data = req.body;
-        const updatedUser = await usersService.updateUser(id, data);
+        const updatedUser = await usersService.updateUserById(id, data);
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
         }
         res.json({ message: 'Updated' });
     } catch (error) {
         res.status(500).json({ error: error.message });
+        throw new Error(`Error updating user: ${error.message}`);
     }
 };
 
 const deleteUserById = async (req, res) => {
     try {
         const id = req.params.id;
-        const deletedUser = await usersService.deleteUser(id);
+        const deletedUser = await usersService.deleteUserById(id);
         if (!deletedUser) {
             return res.status(404).json({ message: 'User not found' });
         }

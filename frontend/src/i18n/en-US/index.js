@@ -21,6 +21,16 @@ export default {
       adminPage: 'Admin Page',
       addProduct: 'Add Product',
       toggleSidebar: 'Toggle Sidebar',
+    },
+    accessibilityButton: {
+      tools: 'Accessibility Tools',
+      openMenu: 'Open Accessibility Menu',
+      fontChange: 'Change Font',
+      underlineLinks: 'Underline Links',
+      textOnly: 'Text Only View',
+      darkView: 'Dark View',
+      reset: 'Reset Settings',
+      language: 'Language'
     }
   },
 }

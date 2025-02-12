@@ -11,5 +11,6 @@ router.delete('/delete/:id', dressesController.deleteById);
 router.put('/changeAvailability/:id', dressesController.changeAvailability);
 router.put('/changeCleaning/:id', dressesController.changeCleaning);
 router.patch('/patch/:id', dressesController.patchDress);
+router.put('/changeToSell/:id', dressesController.changeToSell);
 
 module.exports = router;

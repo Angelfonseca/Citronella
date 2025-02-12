@@ -8,7 +8,7 @@ const dressesSchema = new Schema({
     price: { type: Number, required: true },
     toSell: { type: Boolean, default: false },
     image: { type: String, required: true },
-    available: { type: Boolean, default: false },
+    available: { type: Boolean, default: true },
     cleaning: { type: Boolean, default: false },
     category: { type: String, required: true },
     sold: { type: Boolean, default: false },

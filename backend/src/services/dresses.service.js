@@ -100,6 +100,22 @@ const patchDress = async (id, dressData) => {
         throw error;
     }
 };
+
+const changeToSell = async (id, newPrice) => {
+    try {
+        const dress = await dressesModel.findById(id);
+        if (!dress) {
+            return null;
+        }
+        dress.toSell = true;
+        dress.price = newPrice;
+        await dress.save();
+        return { message: 'To sell changed' };
+    } catch (error) {
+        console.error("Error changing to sell:", error);
+        throw error;
+    }
+};
 module.exports = {
     getAll,
     create,
@@ -108,5 +124,6 @@ module.exports = {
     deleteDressById,
     changeAvailability,
     changeCleaning,
-    patchDress
+    patchDress,
+    changeToSell,
 };

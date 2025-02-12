@@ -8,17 +8,31 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+const ensureAuth = require('./middlewares/auth.middleware');
 
 
 app.use('/api/users', require('./routes/users.routes'));
-app.use('/api/dresses', require('./routes/dresses.routes'));
-app.use('/api/jewelry', require('./routes/jewelry.routes'));
-app.use('/api/sells', require('./routes/sells.routes'));
-app.use('/api/rents', require('./routes/rents.routes'));
+app.use('/api/dresses', ensureAuth.ensureAuth,require('./routes/dresses.routes'));
+app.use('/api/jewelry', ensureAuth.ensureAuth,require('./routes/jewelry.routes'));
+app.use('/api/sells', ensureAuth.ensureAuth,require('./routes/sells.routes'));
+app.use('/api/rents', ensureAuth.ensureAuth,require('./routes/rents.routes'));
 
-app.use('/dresses', express.static(path.join(__dirname, '..' , 'public', 'images', 'vestidos' )));
-app.use('/jewelry', express.static(path.join(__dirname, '..' , 'public', 'images', 'joyeria' )));
+// Middleware to check token in query parameter for image access
+const checkTokenQueryParam = (req, res, next) => {
+    const token = req.query.token;
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+    try {
+        ensureAuth.verifyToken(token);
+        next();
+    } catch (error) {
+        res.status(401).json({ message: 'Invalid token' });
+    }
+};
+
+app.use('/dresses', checkTokenQueryParam, express.static(path.join(__dirname, '..', 'public', 'images', 'vestidos')));
+app.use('/jewelry', checkTokenQueryParam, express.static(path.join(__dirname, '..', 'public', 'images', 'joyeria')));
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 app.listen(PORT, () => {

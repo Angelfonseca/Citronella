@@ -105,7 +105,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiService from 'src/boot/ApiServices/api.service';
+import checkLoggedIn from 'src/boot/auth';
 
+// Verificar si el usuario está autenticado
+checkLoggedIn();
+const user = JSON.parse(localStorage.getItem('user'));
+
+if (user.role !== 'admin') {
+  this.$router.push('/');
+}
 // Datos reactivos
 const searchKeyword = ref('');
 const startDate = ref('');
@@ -131,12 +139,24 @@ const getProductDetails = async (productModel, productId) => {
 };
 
 // Obtener ventas desde la API y cargar detalles de productos
+// Función para obtener el nombre del usuario
+const getUserName = async (userId) => {
+  try {
+    const response = await apiService.get(`/users/${userId}`);
+    return response.data.name || 'N/A';
+  } catch (error) {
+    console.error(`Error obteniendo el nombre del usuario (${userId}):`, error);
+    return 'N/A';
+  }
+};
+
+// Obtener ventas desde la API y cargar detalles de productos y usuarios
 const fetchSales = async () => {
   try {
     const response = await apiService.get('/sells');
     console.log('Ventas obtenidas:', response.data);
 
-    // Iterar sobre cada venta y cargar los detalles de los productos
+    // Iterar sobre cada venta y cargar los detalles de los productos y usuario
     const enrichedSales = await Promise.all(
       response.data.map(async (sale) => {
         const enrichedProducts = await Promise.all(
@@ -148,8 +168,12 @@ const fetchSales = async () => {
             };
           })
         );
+
+        const userName = await getUserName(sale.user_id); // Obtener el nombre del usuario
+
         return {
           ...sale,
+          user_name: userName, // Agregar el nombre del usuario
           products: enrichedProducts,
           date: sale.date.split('T')[0], // Formatear fecha para mostrar solo YYYY-MM-DD
         };
@@ -164,17 +188,19 @@ const fetchSales = async () => {
   }
 };
 
+
 // Cargar datos al montar el componente
 onMounted(fetchSales);
 
 // Columnas de la tabla
 const columns = [
-  { name: 'user', required: true, label: 'Usuario', align: 'left', field: (row) => row.user_id?.name || 'N/A' },
+  { name: 'user', required: true, label: 'Usuario', align: 'left', field: (row) => row.user_name || 'N/A' },
   { name: 'products', required: true, label: 'Productos', align: 'left' },
   { name: 'total', label: 'Total', align: 'right', field: 'total' },
   { name: 'date', label: 'Fecha', align: 'left', field: 'date' },
   { name: 'actions', label: 'Acciones', align: 'center' },
 ];
+
 
 // Filtrado de ventas
 const filteredSales = computed(() => {

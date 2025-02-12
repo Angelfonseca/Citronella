@@ -15,8 +15,8 @@ const ensureDirectoryExists = (dirPath) => {
 };
 
 // Directorios de almacenamiento
-const vestidosUploadDir = path.join(__dirname, '/public/images/vestidos');
-const jewelryUploadDir = path.join(__dirname, '/public/images/joyeria');
+const vestidosUploadDir = path.join(__dirname, '../../public/images/vestidos');
+const jewelryUploadDir = path.join(__dirname, '../../public/images/joyeria');
 
 // Asegurar que los directorios existen
 ensureDirectoryExists(vestidosUploadDir);
