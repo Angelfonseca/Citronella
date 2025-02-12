@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 const ensureAuth = require('./middlewares/auth.middleware');
 
-app.use('/test', (req, res) => {
+app.use('/api/test', (req, res) => {
     res.send('Hello from Express');
 });
 app.use('/api/users', require('./routes/users.routes'));
