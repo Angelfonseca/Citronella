@@ -10,7 +10,9 @@ app.use(cors());
 app.use(express.json());
 const ensureAuth = require('./middlewares/auth.middleware');
 
-
+app.use('/test', (req, res) => {
+    res.send('Hello from Express');
+});
 app.use('/api/users', require('./routes/users.routes'));
 app.use('/api/dresses', ensureAuth.ensureAuth,require('./routes/dresses.routes'));
 app.use('/api/jewelry', ensureAuth.ensureAuth,require('./routes/jewelry.routes'));
