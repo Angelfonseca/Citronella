@@ -265,7 +265,7 @@ const sellDress = async () => {
 const getDressImage = () => {
   const token = localStorage.getItem('token');
   if (localDress.value.image) {
-    localDress.value.image = `${url}dresses/${localDress.value.image}?token=${token}`;
+    localDress.value.image = `${url}api/images/dresses/${localDress.value.image}?token=${token}`;
   } else {
     localDress.value.image = 'https://via.placeholder.com/300';
   }

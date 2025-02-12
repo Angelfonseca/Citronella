@@ -13,6 +13,7 @@ const ensureAuth = require('./middlewares/auth.middleware');
 app.use('/api/test', (req, res) => {
     res.send('Hello from Express');
 });
+
 app.use('/api/users', require('./routes/users.routes'));
 app.use('/api/dresses', ensureAuth.ensureAuth,require('./routes/dresses.routes'));
 app.use('/api/jewelry', ensureAuth.ensureAuth,require('./routes/jewelry.routes'));
@@ -33,8 +34,8 @@ const checkTokenQueryParam = (req, res, next) => {
     }
 };
 
-app.use('/dresses', checkTokenQueryParam, express.static(path.join(__dirname, '..', 'public', 'images', 'vestidos')));
-app.use('/jewelry', checkTokenQueryParam, express.static(path.join(__dirname, '..', 'public', 'images', 'joyeria')));
+app.use('/api/images/dresses', checkTokenQueryParam, express.static(path.join(__dirname, '..', 'public', 'images', 'vestidos')));
+app.use('/api/images/jewelry', checkTokenQueryParam, express.static(path.join(__dirname, '..', 'public', 'images', 'joyeria')));
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 app.listen(PORT, () => {

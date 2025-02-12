@@ -131,7 +131,7 @@ const isValidQuantity = computed(() => quantityToBuy.value > 0 && quantityToBuy.
 const getImageUrl = (imagePath) => {
   if (!imagePath) return defaultImage; // Usa imagen por defecto si no hay imagen
   const token = localStorage.getItem('token');
-  const imageUrl = `${url}jewelry/${imagePath}?token=${token}`; // Añade el token como query parameter
+  const imageUrl = `${url}api/images/jewelry/${imagePath}?token=${token}`; // Añade el token como query parameter
   console.log('URL de la imagen:', imageUrl);
   return imageUrl;
 };
